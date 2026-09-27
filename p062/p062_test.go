@@ -33,7 +33,7 @@ func TestSolve(t *testing.T) {
 // BenchmarkSolve measures how efficient your sorting and map lookup logic is.
 // Ideally, this algorithm should finish well within a few milliseconds.
 func BenchmarkSolve(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = Solve(5)
 	}
 }
