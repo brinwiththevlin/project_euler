@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/brinwiththevlin/project_euler/registry"
 )
@@ -25,11 +26,14 @@ func main() {
 	}
 
 	fmt.Printf("--- Running Project Euler Problem %d ---\n", *probNum)
+	start := time.Now()
 	answer, err := runFn(*input)
 	if err != nil {
 		fmt.Printf("Execution failed: %v\n", err)
 		os.Exit(1)
 	}
+	end := time.Now()
 
 	fmt.Printf("Answer: %s\n", answer)
+	fmt.Printf("calculation time: %v\n", end.Sub(start).Seconds())
 }
