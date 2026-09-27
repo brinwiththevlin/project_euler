@@ -7,5 +7,6 @@ import (
 	_ "github.com/brinwiththevlin/project_euler/p002"
 	_ "github.com/brinwiththevlin/project_euler/p003"
 	_ "github.com/brinwiththevlin/project_euler/p004"
+	_ "github.com/brinwiththevlin/project_euler/p005"
 	_ "github.com/brinwiththevlin/project_euler/p062"
 )
