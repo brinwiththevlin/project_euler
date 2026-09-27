@@ -60,6 +60,7 @@ func TestSolve(t *testing.T) {
 }
 
 func BenchmarkSolve(b *testing.B) {
+	b.Skip("TODO: set a real benchmark input for problem $n, then remove this skip")
 	for b.Loop() {
 		_ = Solve(0)
 	}
