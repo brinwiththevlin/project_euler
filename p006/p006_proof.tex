@@ -4,11 +4,11 @@
 \usepackage{amsthm}
 \usepackage{hyperref}
 \usepackage{cleveref} % must come after hyperref
+\usepackage{thmtools} % \declaretheorem: lets \cref name shared-counter environments correctly
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
+\declaretheorem[name=Theorem]{theorem}
+\declaretheorem[name=Lemma, sibling=theorem]{lemma}
+\declaretheorem[name=Definition, style=definition, sibling=theorem]{definition}
 
 \title{Project Euler Problem 6: Sum Square Difference}
 \author{Brinhasavlin}
