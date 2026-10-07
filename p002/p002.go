@@ -1,15 +1,13 @@
 package p002
 
 func Solve(limit int) uint64 {
-	var sum uint64 = 0
-	var f1 uint64 = 1
-	var f2 uint64 = 2
+	var sum uint64 = 2
+	var e1 uint64 = 2
+	var e2 uint64 = 8
 
-	for f2 < uint64(limit) {
-		if f2%2 == 0 {
-			sum += f2
-		}
-		f1, f2 = f2, f1+f2
+	for e2 < uint64(limit) {
+		sum += e2
+		e1, e2 = e2, e1+4*e2
 	}
 	return sum
 }
