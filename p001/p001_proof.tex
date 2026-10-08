@@ -1,0 +1,197 @@
+\documentclass{article}
+\usepackage{mathtools} % loads amsmath
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{cleveref} % must come after hyperref
+\usepackage{thmtools} % \declaretheorem: lets \cref name shared-counter environments correctly
+
+\declaretheorem[name=Theorem]{theorem}
+\declaretheorem[name=Lemma, sibling=theorem]{lemma}
+\declaretheorem[name=Definition, style=definition, sibling=theorem]{definition}
+
+\title{Project Euler Problem 1: Multiples of 3 or 5}
+\author{Brinhasavlin}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Problem}
+
+If we list all the natural numbers below $10$ that are multiples of $3$ or $5$, we get $3, 5, 6$ and $9$. The sum of these multiples is $23$.
+
+Find the sum of all the multiples of $3$ or $5$ below $1000$.
+
+\section*{Proof}
+Rather than testing every number below $n$, we sum the multiples of $3$ and of $5$ directly and correct for the numbers
+counted twice. Throughout, we use the closed form for the sum of the first $k$ integers, proven by induction in
+Problem 6:
+\[
+  T(k) = \sum_{j=1}^{k} j = \frac{k(k+1)}{2}.
+\]
+
+\begin{definition}\label{def:multsum}
+  For $d, n \in \mathbb{N}$, let $\operatorname{S}_d(n)$ be the sum of the positive multiples of $d$ below $n$.
+\end{definition}
+
+\begin{lemma}\label{lem:multsum}
+  For all $d, n \in \mathbb{N}$,
+  \[
+    \operatorname{S}_d(n) = d \cdot T\!\left(\left\lfloor \frac{n-1}{d} \right\rfloor\right).
+  \]
+\end{lemma}
+\begin{proof}
+  The positive multiples of $d$ are $jd$ for $j \ge 1$. Such a multiple is below $n$ exactly when $jd \le n - 1$, that
+  is, when $j \le \frac{n-1}{d}$. Since $j$ is an integer, this is equivalent to $j \le k$, where
+  $k = \left\lfloor \frac{n-1}{d} \right\rfloor$. Hence the multiples of $d$ below $n$ are $d, 2d, \dots, kd$, and
+  \[
+    \operatorname{S}_d(n) = \sum_{j=1}^{k} jd = d \sum_{j=1}^{k} j = d \cdot T(k).
+  \]
+  If $k = 0$, there are no such multiples, and both sides are $0$.
+\end{proof}
+
+\begin{definition}\label{def:lcm}
+  For a finite nonempty set $D$ of positive integers, the \emph{least common multiple} $\operatorname{lcm}(D)$ is the
+  smallest positive integer that is a multiple of every element of $D$.
+\end{definition}
+
+For this definition to make sense, a smallest such integer must exist. Let $P = \prod_{e \in D} e$ be the product of
+all elements of $D$. For every $d \in D$,
+\[
+  P = d \cdot \prod_{e \in D \setminus \{d\}} e,
+\]
+where the second factor is a product of positive integers and is therefore a positive integer (it equals $1$ when
+$D = \{d\}$, since an empty product is $1$). Hence $d \mid P$ for every $d \in D$, and $P > 0$ as a product of
+positive integers. So the set of positive common multiples of $D$,
+\[
+  M = \{ m \in \mathbb{Z}_{>0} : d \mid m \text{ for every } d \in D \},
+\]
+contains $P$ and is nonempty. By the well-ordering principle, $M$ has a least element, and that element is
+$\operatorname{lcm}(D)$. Hence $\operatorname{lcm}(D)$ is well defined.
+
+\begin{lemma}\label{lem:multiple}
+  A positive integer $x$ is a multiple of all elements of a finite nonempty set $D$ of positive integers if and only if
+  it is also a multiple of $\operatorname{lcm}(D)$.
+\end{lemma}
+\begin{proof}
+  Let $m = \operatorname{lcm}(D)$. We first show that if $x$ is a multiple of $m$, then it is a multiple of every
+  element of $D$. Say $x = km$ for some integer $k$. Let $d \in D$. By \cref{def:lcm}, $d \mid m$, so there is an
+  integer $p$ with $m = pd$. Then
+  \[
+    x = km = k(pd) = (kp)d,
+  \]
+  and $kp$ is an integer, so $d \mid x$. Since $d$ was arbitrary, $x$ is a multiple of every element of $D$.
+  
+  Conversely, we show that if $x$ is a multiple of every element of $D$, then it is necessarily a multiple of $m$ as
+  well. Using the set $M$ defined right after \Cref{def:lcm}, we know that $m$ is the smallest multiple of every
+  element of $D$ and that $m$ is greater than $0$. We start by dividing $x$ by $m$:
+  \begin{align*}
+    x &= qm + r, \qquad 0 \le r < m, \\
+    r &= x - qm.
+  \end{align*}
+  For an arbitrary $d$ in $D$, we know that $d \mid x$ by the hypothesis. Since $m \in M$, we also know that
+  $d \mid m$, implying that $d \mid qm$. So there are integers $a$ and $b$ with $x = ad$ and $qm = bd$, and
+  \[
+    r = x - qm = ad - bd = (a - b)d.
+  \]
+  Therefore, $d \mid r$, and since $d$ was arbitrary, every element of $D$ divides $r$. If we suppose that $r > 0$, then $r$ would be a member of $M$ that is smaller than $m$. But $m$ is
+  defined to be the smallest member of $M$, so $r = 0$. This means that $x = qm$, where $q$ is an integer, making $x$
+  a multiple of $m$.
+\end{proof}
+
+With only two divisors, it is easy to see that subtracting the multiples of $15$ once fixes the double counting. The
+same idea works for any set of divisors, but with more of them the overlaps are harder to track by hand, so we prove
+the general statement by looking at how many times each number is counted.
+
+\begin{lemma}\label{lem:incexc}
+  Let $D$ be a finite nonempty set of positive integers and let $n \in \mathbb{N}$. The sum of the positive integers
+  below $n$ that are multiples of at least one element of $D$ is
+  \[
+    \sum_{\emptyset \ne A \subseteq D} {(-1)}^{|A|+1} \operatorname{S}_{\operatorname{lcm}(A)}(n).
+  \]
+\end{lemma}
+\begin{proof}
+  The sum we want adds each $x$ below $n$ that is a multiple of some element of $D$ exactly once, and leaves out every
+  other $x$. We rewrite the alternating sum in the statement as a single sum over $x$, where each $x$ is multiplied by a
+  coefficient that we call its \emph{weight}. We then show that the weight of $x$ is $1$ if $x$ is a multiple of some
+  element of $D$ and $0$ otherwise, so the two sums agree.
+
+  For each integer $x$ with $1 \le x < n$, let $D_x = \{d \in D : d \mid x\}$ be the set of divisors in $D$ that
+  divide $x$, and let $m_x = |D_x|$.
+
+  Let $A \subseteq D$ be nonempty. Then $A$ is a finite nonempty set of positive integers, so by \cref{lem:multiple},
+  a positive integer is a multiple of every element of $A$ if and only if it is a multiple of
+  $\operatorname{lcm}(A)$. So $\operatorname{S}_{\operatorname{lcm}(A)}(n)$ is the sum of those $x < n$
+  that are divisible by every element of $A$, that is, those with $A \subseteq D_x$. Writing $[P]$ for $1$ if the
+  statement $P$ is true and $0$ otherwise, we can sum over every candidate below $n$ and keep only those that qualify:
+  \[
+    \operatorname{S}_{\operatorname{lcm}(A)}(n) = \sum_{x=1}^{n-1} x \, [A \subseteq D_x].
+  \]
+  Substituting this, swapping the order of the two finite sums, and factoring out $x$, which does not depend on $A$,
+  \begin{align*}
+    \sum_{\emptyset \ne A \subseteq D} {(-1)}^{|A|+1} \operatorname{S}_{\operatorname{lcm}(A)}(n)
+      &= \sum_{\emptyset \ne A \subseteq D} {(-1)}^{|A|+1} \sum_{x=1}^{n-1} x \, [A \subseteq D_x] \\
+      &= \sum_{x=1}^{n-1} x \sum_{\emptyset \ne A \subseteq D} {(-1)}^{|A|+1} [A \subseteq D_x] \\
+      &= \sum_{x=1}^{n-1} x \sum_{\emptyset \ne A \subseteq D_x} {(-1)}^{|A|+1}.
+  \end{align*}
+  The last step uses the bracket to drop the subsets that are not contained in $D_x$.
+  The inner sum is the weight of $x$. To compute it, we group the nonempty subsets of $D_x$ by size. For each $j$ with
+  $1 \le j \le m_x$, there are $\binom{m_x}{j}$ subsets of size $j$, and each contributes ${(-1)}^{j+1}$. Hence
+  \[
+    \sum_{\emptyset \ne A \subseteq D_x} {(-1)}^{|A|+1} = \sum_{j=1}^{m_x} {(-1)}^{j+1} \binom{m_x}{j} = w(m_x),
+  \]
+  where for any integer $k \ge 0$ we define
+  \[
+    w(k) = \sum_{j=1}^{k} {(-1)}^{j+1} \binom{k}{j}.
+  \]
+  If $k = 0$, the sum is empty and $w(0) = 0$. If $k \ge 1$, then
+  \begin{align*}
+    0 = {(1 - 1)}^k
+      &= \sum_{j=0}^{k} \binom{k}{j} 1^{k-j} {(-1)}^{j} && \text{by the binomial theorem} \\
+      &= \sum_{j=0}^{k} \binom{k}{j} {(-1)}^{j} && \text{since $1^{k-j} = 1$} \\
+      &= 1 + \sum_{j=1}^{k} \binom{k}{j} {(-1)}^{j} && \text{pulling out the $j = 0$ term} \\
+      &= 1 - \sum_{j=1}^{k} \binom{k}{j} {(-1)}^{j+1} && \text{since ${(-1)}^{j} = -{(-1)}^{j+1}$} \\
+      &= 1 - w(k),
+  \end{align*}
+  so $w(k) = 1$. Thus $w(m_x) = 1$ when $m_x \ge 1$, that is, when $x$ is a multiple of some element of $D$, and
+  $w(m_x) = 0$ otherwise. Therefore
+  \[
+    \sum_{\emptyset \ne A \subseteq D} {(-1)}^{|A|+1} \operatorname{S}_{\operatorname{lcm}(A)}(n)
+      = \sum_{x=1}^{n-1} x \, w(m_x)
+      = \sum_{\substack{1 \le x < n \\ m_x \ge 1}} x,
+  \]
+  which is the sum of the positive integers below $n$ that are multiples of at least one element of $D$.
+\end{proof}
+
+\begin{theorem}\label{thm:sum}
+  For all $n \in \mathbb{N}$, the sum of the positive integers below $n$ that are multiples of $3$ or $5$ is
+  \[
+    \operatorname{S}_3(n) + \operatorname{S}_5(n) - \operatorname{S}_{15}(n).
+  \]
+\end{theorem}
+\begin{proof}
+  Apply \cref{lem:incexc} with $D = \{3, 5\}$. The nonempty subsets are $\{3\}$ and $\{5\}$, each of size $1$, and
+  $\{3, 5\}$, of size $2$. A single-element set $\{d\}$ has $\operatorname{lcm}(\{d\}) = d$, since $d$ is the smallest
+  positive multiple of $d$. For $\{3, 5\}$, the number $15$ is a positive multiple of both $3$ and $5$. Any smaller
+  common multiple would be a positive multiple of $5$ below $15$, so it would be $5$ or $10$, and $3$ divides neither.
+  Hence $\operatorname{lcm}(\{3, 5\}) = 15$, and the three terms are $\operatorname{S}_3(n)$ and
+  $\operatorname{S}_5(n)$ with sign $+$, and $\operatorname{S}_{15}(n)$ with sign $-$.
+\end{proof}
+
+\section*{Answer}
+As a check, the example from the problem statement ($n = 10$) gives
+\[
+  3 \cdot T(3) + 5 \cdot T(1) - 15 \cdot T(0) = 18 + 5 - 0 = 23.
+\]
+For $n = 1000$, we have $\lfloor 999/3 \rfloor = 333$, $\lfloor 999/5 \rfloor = 199$, and $\lfloor 999/15 \rfloor = 66$.
+By \cref{thm:sum,lem:multsum},
+\begin{align*}
+  \operatorname{S}_3(1000) + \operatorname{S}_5(1000) - \operatorname{S}_{15}(1000)
+    &= 3 \cdot T(333) + 5 \cdot T(199) - 15 \cdot T(66) \\
+    &= 3 \cdot 55611 + 5 \cdot 19900 - 15 \cdot 2211 \\
+    &= 166833 + 99500 - 33165 \\
+    &= 233168.
+\end{align*}
+
+\end{document}

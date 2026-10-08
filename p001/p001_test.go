@@ -9,6 +9,11 @@ func TestSolve(t *testing.T) {
 		want  uint64
 	}{
 		{
+			name:  "No positive integers below 0",
+			limit: 0,
+			want:  0,
+		},
+		{
 			name:  "Project Euler Example (under 10)",
 			limit: 10,
 			want:  23,
