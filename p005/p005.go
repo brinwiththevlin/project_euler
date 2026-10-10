@@ -3,15 +3,15 @@ package p005
 func Solve(limit int) uint64 {
 	// this question is the same as LCM(1,...,limit)
 	// which is the same as LCM(2,..., limit)
-	result := 1
+	var result uint64 = 1
 	for i := 2; i <= limit; i++ {
-		result = lcm(result, i)
+		result = lcm(result, uint64(i))
 	}
-	return uint64(result)
+	return result
 }
 
 // Greatest Common Divisor (GCD) via Euclidean algorithm
-func gcd(a, b int) int {
+func gcd(a, b uint64) uint64 {
 	for b != 0 {
 		a, b = b, a%b
 	}
@@ -19,8 +19,8 @@ func gcd(a, b int) int {
 }
 
 // Least Common Multiple (LCM) via GCD
-func lcm(a, b int) int {
-	return (a * b) / gcd(a, b)
+func lcm(a, b uint64) uint64 {
+	return a / gcd(a, b) * b
 }
 
 // brute force

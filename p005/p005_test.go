@@ -9,16 +9,15 @@ func TestSolve(t *testing.T) {
 		want  uint64
 	}{
 		{
-			name:  "smallest number divisible by all pos int less than 10",
+			name:  "smallest number divisible by every integer from 1 to 10",
 			limit: 10,
 			want:  2520,
 		},
 		{
-			name:  "smallest number divisible by all pos int less than 20",
+			name:  "smallest number divisible by every integer from 1 to 20",
 			limit: 20,
 			want:  232792560,
 		},
-		// TODO: add the example from the problem statement and the real answer.
 	}
 
 	for _, tt := range tests {
@@ -32,7 +31,6 @@ func TestSolve(t *testing.T) {
 }
 
 func BenchmarkSolve(b *testing.B) {
-	b.Skip("TODO: set a real benchmark input for problem 5, then remove this skip")
 	for b.Loop() {
 		_ = Solve(20)
 	}

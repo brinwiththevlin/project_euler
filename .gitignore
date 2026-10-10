@@ -5,3 +5,6 @@
 *.log
 *.out
 *.synctex.gz
+
+# Go test binaries (from go test -c / -cpuprofile)
+*.test

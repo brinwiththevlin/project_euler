@@ -9,6 +9,16 @@ func TestSolve(t *testing.T) {
 		want  uint64
 	}{
 		{
+			name:  "no even terms below the first (limit 1)",
+			limit: 1,
+			want:  0,
+		},
+		{
+			name:  "limit equal to an even term includes it (limit 8)",
+			limit: 8,
+			want:  10,
+		},
+		{
 			name:  "Project Euler problem 2 (under 90)",
 			limit: 90,
 			want:  44,
