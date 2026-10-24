@@ -9,5 +9,6 @@ import (
 	_ "github.com/brinwiththevlin/project_euler/p004"
 	_ "github.com/brinwiththevlin/project_euler/p005"
 	_ "github.com/brinwiththevlin/project_euler/p006"
+	_ "github.com/brinwiththevlin/project_euler/p007"
 	_ "github.com/brinwiththevlin/project_euler/p062"
 )

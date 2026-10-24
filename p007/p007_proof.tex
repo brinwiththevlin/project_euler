@@ -1,0 +1,250 @@
+% chktex-file 40 (factorial ! is not sentence punctuation)
+\documentclass{article}
+\usepackage{mathtools} % loads amsmath
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{cleveref} % must come after hyperref
+\usepackage{thmtools} % \declaretheorem: lets \cref name shared-counter environments correctly
+
+\declaretheorem[name=Theorem]{theorem}
+\declaretheorem[name=Lemma, sibling=theorem]{lemma}
+\declaretheorem[name=Definition, style=definition, sibling=theorem]{definition}
+
+\title{Project Euler Problem 7: 10 001st Prime}
+\author{Brinhasavlin}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Problem}
+
+By listing the first six prime numbers: $2, 3, 5, 7, 11$, and $13$, we can see that the $6$th prime is $13$.
+
+What is the $10\,001$st prime number?
+
+\section*{Proof}
+
+We find the $n$th prime with a prime sieve: we cross out the composite numbers up to some limit $M$, then count the
+remaining primes in order until we reach the $n$th one. This only works if $M$ is at least as large as the $n$th prime,
+and the sieve does not tell us how large that is in advance. The rest of this proof establishes an upper bound on the
+$n$th prime, which we use as the limit $M$.
+
+Throughout, let $p_n$ denote the $n$th prime, and for a real number $x$ let $\pi(x)$ denote the number of primes less
+than or equal to $x$.
+
+A lower bound on how many primes there are up to $x$ is the same thing as an upper bound on where the $n$th prime is:
+if $\pi(x) \ge n$, then at least $n$ primes are at most $x$, so $p_n \le x$. It therefore suffices to show that there
+are many primes up to $x$. We do this for even $x$, writing $x = 2m$.
+
+Our approach is to take a specific number $N$ and look at its prime factorization. For a prime $p$ and a positive
+integer $k$, let $\nu_p(k)$ denote the exponent of $p$ in the prime factorization of $k$, that is, the largest $e$ such
+that $p^e \mid k$. Write
+\[
+  N = \prod_{p \le 2m} p^{\nu_p(N)},
+\]
+with one factor for every prime $p \le 2m$, using exponent $0$ for primes that do not divide $N$. This product is all of
+$N$ provided $N$ has no prime factor larger than $2m$, and it has exactly $\pi(2m)$ factors. If, in addition, every
+factor $p^{\nu_p(N)}$ is at most $2m$, then $N \le {(2m)}^{\pi(2m)}$. So if $N$ is very large, $\pi(2m)$ cannot be
+small: a large product of small factors needs many factors.
+
+We take $N = \binom{2m}{m}$. It is a natural choice because it is large, roughly $4^m$, yet it is built only from the
+numbers $1, 2, \ldots, 2m$, since $\binom{2m}{m} = \frac{(2m)!}{m!\,m!}$. So we expect both its size and its prime
+factors to be controlled by $2m$. \Cref{lem:binomlower} shows that it is large, and \cref{lem:binomupper} shows that it
+has no prime factor larger than $2m$ and that every factor in its prime factorization is at most $2m$.
+
+\begin{lemma}\label{lem:binomlower}
+  For every integer $m \ge 1$,
+  \[
+    \binom{2m}{m} \ge \frac{4^m}{2m + 1}.
+  \]
+\end{lemma}
+\begin{proof}
+  We begin by applying the binomial theorem to ${(1 + 1)}^{2m}$:
+  \[
+    4^m = 2^{2m} = {(1 + 1)}^{2m} = \sum_{k=0}^{2m} \binom{2m}{k} 1^{2m-k} 1^k = \sum_{k=0}^{2m} \binom{2m}{k}.
+  \]
+
+  The other observation about binomial coefficients is that the largest value of $\binom{2m}{k}$ is when $k = m$. We
+  show this by analyzing the ratio between consecutive terms $\binom{2m}{k+1}$ and $\binom{2m}{k}$, for
+  $0 \le k \le 2m - 1$:
+  \[
+    \frac{\binom{2m}{k+1}}{\binom{2m}{k}}
+      = \frac{\frac{(2m)!}{(k+1)!\,(2m-k-1)!}}{\frac{(2m)!}{k!\,(2m-k)!}}
+      = \frac{k!\,(2m-k)!}{(k+1)!\,(2m-k-1)!}.
+  \]
+  Since $(k+1)! = (k+1) \cdot k!$ and $(2m-k)! = (2m-k) \cdot (2m-k-1)!$, the factorials $k!$ and $(2m-k-1)!$ cancel,
+  leaving
+  \[
+    \frac{\binom{2m}{k+1}}{\binom{2m}{k}} = \frac{2m - k}{k + 1}.
+  \]
+  This ratio is greater than $1$ exactly when
+  \[
+    2m - k > k + 1 \iff 2k < 2m - 1 \iff k < m - \tfrac{1}{2},
+  \]
+  and since $k$ is an integer, this happens exactly when $k \le m - 1$. In short, when $k < m$ the next term is bigger,
+  and when $k \ge m$ the next term is smaller. So the terms increase up to $k = m$ and decrease after it:
+  \[
+    \binom{2m}{0} < \binom{2m}{1} < \cdots < \binom{2m}{m} > \binom{2m}{m+1} > \cdots > \binom{2m}{2m},
+  \]
+  and therefore $\binom{2m}{m}$ is the largest of them.
+
+  Since every term of the sum is at most $\binom{2m}{m}$,
+  \[
+    \sum_{k=0}^{2m} \binom{2m}{k} \le \sum_{k=0}^{2m} \binom{2m}{m} = (2m + 1) \binom{2m}{m}.
+  \]
+  Combining both results, we get
+  \[
+    4^m \le (2m + 1) \binom{2m}{m}, \qquad\text{so}\qquad \binom{2m}{m} \ge \frac{4^m}{2m + 1}. \qedhere
+  \]
+\end{proof}
+
+To bound the factors $p^{\nu_p(N)}$ of $N = \binom{2m}{m}$, we need $\nu_p(N)$. We first show that $\nu_p$ turns
+products into sums. The proof relies on Euclid's lemma: if a prime divides a product of two integers, then it divides at
+least one of them.
+
+\begin{lemma}\label{lem:valmult}
+  For every prime $p$ and all positive integers $a$ and $b$,
+  \[
+    \nu_p(ab) = \nu_p(a) + \nu_p(b).
+  \]
+\end{lemma}
+\begin{proof}
+  Let $\alpha = \nu_p(a)$, that is, you can divide $a$ by the prime number $p$ $\alpha$ times. Let $a'$ be the remaining
+  factors when you divide out all the $p$ that fit in $a$. That is, 
+  \[a = p^\alpha \cdot a'.\]
+  Similarly, let $\beta = \nu_p(b)$ and $b'$ be the leftover after dividing out all $p$s that fit in $b$.
+  \[b = p^\beta \cdot b'.\]
+
+  Multiplying the two we get:
+  \[
+    ab = p^{\alpha+\beta} \cdot a'b'
+  \]
+  It follows that $\nu_p(ab) \geq \alpha + \beta$. The only question is if $p$ divides $a'b'$. By construction,
+  $p$ divides neither $a'$ nor $b'$, so by Euclid's lemma $p$ doesn't divide $a'b'$ either.
+  If $p^{\alpha+\beta+1}$ divided $ab$, then dividing both sides of $ab = p^{\alpha+\beta} \cdot a'b'$ by
+  $p^{\alpha+\beta}$ would show that $p$ divides $a'b'$, which we just ruled out.
+  Therefore, $\nu_p(ab) = \alpha + \beta = \nu_p(a) + \nu_p(b)$.
+\end{proof}
+
+Since $\binom{2m}{m} = \frac{(2m)!}{m!\,m!}$, we have $(2m)! = \binom{2m}{m} \cdot m! \cdot m!$. By \cref{lem:valmult},
+$\nu_p((2m)!) = \nu_p(\binom{2m}{m}) + 2\,\nu_p(m!)$, that is,
+\[
+  \nu_p\!\left(\binom{2m}{m}\right) = \nu_p((2m)!) - 2\,\nu_p(m!),
+\]
+so it is enough to know how many times $p$ divides a factorial.
+
+\begin{lemma}[Legendre's formula]\label{lem:legendre}
+  For every prime $p$ and integer $k \ge 0$,
+  \[
+    \nu_p(k!) = \sum_{i=1}^{\infty} \left\lfloor \frac{k}{p^i} \right\rfloor,
+  \]
+  where the sum is finite because every term with $p^i > k$ is $0$.
+\end{lemma}
+\begin{proof}
+  Recall that $k!$ is just the product of all positive integers up to and including $k$.
+  That is $\nu_p(k!) = \nu_p(1 \cdot 2 \cdot 3 \cdots k)$,
+  and by \Cref{lem:valmult}, this expands to:
+  \[
+    \nu_p(k!) = \sum_{j=1}^{k} \nu_p(j)
+  \]
+  Next we express $\nu_p(j)$ as a summation, let square brackets denote $1$ if the enclosed expression is true and $0$
+  if it is false. 
+  \[
+  \nu_p(j) = \sum_{i=1}^{\infty} \left[p^i \mid j\right]
+  \]
+  To see why, let $e = \nu_p(j)$, so $j = p^e \cdot j'$ where $p$ does not divide $j'$. For $i \le e$, $p^i$ divides
+  $p^e$, which divides $j$, so the term is $1$. For $i > e$, if $p^i$ divided $j$ then $p$ would divide $j$ at least
+  $i > e$ times, contradicting that $e$ is the largest such count, so the term is $0$. The summation is therefore $e$
+  ones followed by zeros, which is $e = \nu_p(j)$.
+
+  Only finitely many terms of this summation are nonzero. Since $p \ge 2$, the binomial theorem gives
+  $p^j \ge 2^j = {(1 + 1)}^j \ge 1 + j > j$, so for every $i \ge j$ we have $p^i \ge p^j > j$, and $p^i$ cannot divide
+  $j$. So every nonzero term has $i < j$.
+
+  This leaves us with
+  \[
+    \nu_p(k!) = \sum_{j=1}^{k} \sum_{i=1}^{\infty} \left[p^i \mid j\right]
+  \]
+  Since $j \le k$, every nonzero term has $i < j \le k$, so every term with $i \ge k$ is $0$. Dropping those zero terms
+  leaves a finite sum over $1 \le j \le k$ and $1 \le i \le k$, and a finite sum may be added in any order. Swapping
+  the order and then restoring the zero terms gives
+  \[
+    \nu_p(k!) = \sum_{j=1}^{k} \sum_{i=1}^{k} \left[p^i \mid j\right]
+      = \sum_{i=1}^{k} \sum_{j=1}^{k} \left[p^i \mid j\right]
+      = \sum_{i=1}^{\infty} \sum_{j=1}^{k} \left[p^i \mid j\right].
+  \]
+
+  We now consider what the term tells us when we fix $i$ and let $j$ vary.
+  The terms of the inner loop now ask which integers $1\le j\le k$ are divided by $p^i$. 
+  Those such integers must then be multiples of $p^i$. Let $q \ge 0$ be the largest integer such that $q p^i \le k$.
+  Then the multiples of $p^i$ in $1, \dots, k$ are exactly $1 \cdot p^i, 2 \cdot p^i, \dots, q \cdot p^i$, so there are
+  $q$ of them, and
+  \[
+    \sum_{j=1}^{k} \left[p^i \mid j\right] = q.
+  \]
+  (If $p^i > k$ there are no multiples, and indeed $q = 0$.)
+
+  It remains to identify $q$. Since $q p^i \le k$, we have $q \le \frac{k}{p^i}$. Since $q$ is the largest integer with
+  this property, $q + 1$ does not have it, so $(q+1) p^i > k$, that is, $q + 1 > \frac{k}{p^i}$. Together,
+  \[
+    q \le \frac{k}{p^i} < q + 1.
+  \]
+  By definition, $\left\lfloor x \right\rfloor$ is the unique integer $n$ with $n \le x < n + 1$, so
+  $q = \left\lfloor \frac{k}{p^i} \right\rfloor$. Substituting into the swapped sum,
+  \[
+    \nu_p(k!) = \sum_{i=1}^{\infty} \left\lfloor \frac{k}{p^i} \right\rfloor.
+  \]
+\end{proof}
+
+Applying \Cref{lem:legendre} to $ \nu_p\!\left(\binom{2m}{m}\right) = \nu_p((2m)!) - 2\,\nu_p(m!)$ we get
+\[
+\begin{aligned}
+  \nu_p\!\left(\binom{2m}{m}\right) &= \nu_p((2m)!) - 2\,\nu_p(m!) \\
+  &= \sum_{i=1}^{\infty} \left\lfloor \frac{2m}{p^i} \right\rfloor - 2 \sum_{i=1}^{\infty} \left\lfloor \frac{m}{p^i} \right\rfloor \\
+  &= \sum_{i=1}^{\infty} \left( \left\lfloor \frac{2m}{p^i} \right\rfloor - 2 \left\lfloor \frac{m}{p^i} \right\rfloor \right)
+\end{aligned}
+\]
+
+\begin{lemma}\label{lem:binomupper}
+  For every integer $m \ge 1$,
+  \[
+    \binom{2m}{m} \le {(2m)}^{\pi(2m)}.
+  \]
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+Together, \cref{lem:binomlower,lem:binomupper} give
+\[
+  \frac{4^m}{2m+1} \le \binom{2m}{m} \le {(2m)}^{\pi(2m)}.
+\]
+The left side grows exponentially in $m$, while the right side can only keep up if the exponent $\pi(2m)$ is large.
+Taking logarithms makes this precise.
+
+\begin{theorem}\label{thm:pilower}
+  For every even integer $x \ge 2$,
+  \[
+    \pi(x) \ge \frac{x \ln 2}{\ln x} - 2.
+  \]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+Finally, we turn this lower bound on $\pi(x)$ into an upper bound on $p_n$ that we can compute directly, and use it as
+the sieve limit.
+
+\begin{theorem}\label{thm:pnupper}
+  For every integer $n \ge 2$,
+  \[
+    p_n \le 4 n \ln n.
+  \]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\end{document}
